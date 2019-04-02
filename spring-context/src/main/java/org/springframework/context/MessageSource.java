@@ -38,7 +38,7 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.context.support.ReloadableResourceBundleMessageSource
  */
 public interface MessageSource {
-
+	//提供国际化的标准访问策略
 	/**
 	 * Try to resolve the message. Return default message if no message was found.
 	 * @param code the code to lookup up, such as 'calculator.noRateSet'. Users of

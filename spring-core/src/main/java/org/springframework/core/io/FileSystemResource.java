@@ -55,7 +55,10 @@ import org.springframework.util.StringUtils;
  * @see java.nio.file.Files
  */
 public class FileSystemResource extends AbstractResource implements WritableResource {
-
+	// 对 java.io.File 类型资源的封装
+	// 只要是跟 File 打交道的，基本上与 FileSystemResource 也可以打交道。
+	// 支持文件和 URL 的形式，实现 WritableResource 接口
+	// 且从 Spring Framework 5.0 开始，FileSystemResource 使用 NIO2 API进行读/写交互。***
 	private final String path;
 
 	@Nullable
@@ -139,14 +142,14 @@ public class FileSystemResource extends AbstractResource implements WritableReso
 
 
 	/**
-	 * Return the file path for this resource.
+	 * Return the file path for this resource.  返回文件路径
 	 */
 	public final String getPath() {
 		return this.path;
 	}
 
 	/**
-	 * This implementation returns whether the underlying file exists.
+	 * This implementation returns whether the underlying file exists.  是否有相关文件存在
 	 * @see java.io.File#exists()
 	 */
 	@Override
@@ -155,19 +158,22 @@ public class FileSystemResource extends AbstractResource implements WritableReso
 	}
 
 	/**
-	 * This implementation checks whether the underlying file is marked as readable
+	 * This implementation checks whether the underlying file is marked as readable  检查相关文件是否被标记为可读
 	 * (and corresponds to an actual file with content, not to a directory).
 	 * @see java.io.File#canRead()
 	 * @see java.io.File#isDirectory()
 	 */
 	@Override
 	public boolean isReadable() {
+		//file不为null，检测可读且不是目录。 那么可读
+		//file是null， filePath可读且filePath路径下不是目录。  那么可读
+		//因为 当构造函数只有filePath时，this.file=null 见构造函数
 		return (this.file != null ? this.file.canRead() && !this.file.isDirectory() :
 				Files.isReadable(this.filePath) && !Files.isDirectory(this.filePath));
 	}
 
 	/**
-	 * This implementation opens a NIO file stream for the underlying file.
+	 * This implementation opens a NIO file stream for the underlying file. ？
 	 * @see java.io.FileInputStream
 	 */
 	@Override
@@ -181,13 +187,14 @@ public class FileSystemResource extends AbstractResource implements WritableReso
 	}
 
 	/**
-	 * This implementation checks whether the underlying file is marked as writable
+	 * This implementation checks whether the underlying file is marked as writable  检查是否可写入
 	 * (and corresponds to an actual file with content, not to a directory).
 	 * @see java.io.File#canWrite()
 	 * @see java.io.File#isDirectory()
 	 */
 	@Override
 	public boolean isWritable() {
+		//见isReadable
 		return (this.file != null ? this.file.canWrite() && !this.file.isDirectory() :
 				Files.isWritable(this.filePath) && !Files.isDirectory(this.filePath));
 	}
@@ -207,6 +214,7 @@ public class FileSystemResource extends AbstractResource implements WritableReso
 	 */
 	@Override
 	public URL getURL() throws IOException {
+		//返回file的路径，或者是filePathd的路径
 		return (this.file != null ? this.file.toURI().toURL() : this.filePath.toUri().toURL());
 	}
 
@@ -259,13 +267,13 @@ public class FileSystemResource extends AbstractResource implements WritableReso
 	}
 
 	/**
-	 * This implementation returns the underlying File/Path length.
+	 * This implementation returns the underlying File/Path length.  返回大小
 	 */
 	@Override
 	public long contentLength() throws IOException {
 		if (this.file != null) {
 			long length = this.file.length();
-			if (length == 0L && !this.file.exists()) {
+			if (length == 0L && !this.file.exists()) {	//？为什么这么判断 长度为0并且文件不存在
 				throw new FileNotFoundException(getDescription() +
 						" cannot be resolved in the file system for checking its content length");
 			}
@@ -287,7 +295,7 @@ public class FileSystemResource extends AbstractResource implements WritableReso
 	@Override
 	public long lastModified() throws IOException {
 		if (this.file != null) {
-			return super.lastModified();
+			return super.lastModified();//看一下super AbstractResource
 		}
 		else {
 			try {
@@ -301,12 +309,14 @@ public class FileSystemResource extends AbstractResource implements WritableReso
 
 	/**
 	 * This implementation creates a FileSystemResource, applying the given path
-	 * relative to the path of the underlying file of this resource descriptor.
+	 * relative to the path of the underlying file of this resource descriptor.	根据相对路径创建资源
 	 * @see org.springframework.util.StringUtils#applyRelativePath(String, String)
 	 */
 	@Override
 	public Resource createRelative(String relativePath) {
-		String pathToUse = StringUtils.applyRelativePath(this.path, relativePath);
+		String pathToUse = StringUtils.applyRelativePath(this.path, relativePath);	//
+		//此对象的file存在，使用路径String构造
+		//此对象是Path构造的，继续使用Path构造
 		return (this.file != null ? new FileSystemResource(pathToUse) :
 				new FileSystemResource(this.filePath.getFileSystem(), pathToUse));
 	}
@@ -322,11 +332,12 @@ public class FileSystemResource extends AbstractResource implements WritableReso
 
 	/**
 	 * This implementation returns a description that includes the absolute
-	 * path of the file.
+	 * path of the file.	返回描述
 	 * @see java.io.File#getAbsolutePath()
 	 */
 	@Override
 	public String getDescription() {
+		//返回绝对路径
 		return "file [" + (this.file != null ? this.file.getAbsolutePath() : this.filePath.toAbsolutePath()) + "]";
 	}
 
@@ -336,6 +347,8 @@ public class FileSystemResource extends AbstractResource implements WritableReso
 	 */
 	@Override
 	public boolean equals(Object other) {
+		//this==other
+		//同类且路径(String)相同
 		return (this == other || (other instanceof FileSystemResource &&
 				this.path.equals(((FileSystemResource) other).path)));
 	}
@@ -344,6 +357,7 @@ public class FileSystemResource extends AbstractResource implements WritableReso
 	 * This implementation returns the hash code of the underlying File reference.
 	 */
 	@Override
+	//返回路径(String)的hashcode
 	public int hashCode() {
 		return this.path.hashCode();
 	}
