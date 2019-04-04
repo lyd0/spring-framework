@@ -42,7 +42,7 @@ import org.springframework.util.ConcurrentReferenceHashMap;
  * @since 2.5.2
  */
 public final class GenericTypeResolver {
-
+// 泛型分析器, 对泛型方法的参数分析
 	/** Cache from Class to TypeVariable Map. */
 	@SuppressWarnings("rawtypes")
 	private static final Map<Class<?>, Map<TypeVariable, Type>> typeVariableCache = new ConcurrentReferenceHashMap<>();
@@ -59,6 +59,7 @@ public final class GenericTypeResolver {
 	 * @return the corresponding generic parameter or return type
 	 */
 	public static Class<?> resolveParameterType(MethodParameter methodParameter, Class<?> implementationClass) {
+		//处理参数类型 传入方法参数、实现类的class
 		Assert.notNull(methodParameter, "MethodParameter must not be null");
 		Assert.notNull(implementationClass, "Class must not be null");
 		methodParameter.setContainingClass(implementationClass);

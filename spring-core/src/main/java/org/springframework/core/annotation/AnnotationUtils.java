@@ -104,7 +104,10 @@ import org.springframework.util.StringUtils;
  * @see java.lang.reflect.AnnotatedElement#getDeclaredAnnotations()
  */
 public abstract class AnnotationUtils {
-
+	//处理注解的工具类 它允许在类，方法或字段上检查注解。
+	//Annotation: 注解。
+	//AnnotatedElement: 被注解元素。
+	//Method:提供某些类或接口中的方法的信息。
 	/**
 	 * The attribute name for annotations with a single element.
 	 */

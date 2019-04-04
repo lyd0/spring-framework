@@ -49,7 +49,9 @@ import org.springframework.util.ReflectionUtils.MethodFilter;
  * @since 2.0
  */
 public final class BridgeMethodResolver {
-
+	// 桥接方法分析器. 关于桥接方法请参考:
+	// http://java.sun.com/docs/books/jls/third_edition/html/expressions.html#15.12.4.5
+	//通过判断方法名、参数的个数以及泛型类型参数来获取桥接方法对应的实际的方法
 	private static final Map<Method, Method> cache = new ConcurrentReferenceHashMap<>();
 
 	private BridgeMethodResolver() {
@@ -66,12 +68,15 @@ public final class BridgeMethodResolver {
 	 * if no more specific one could be found)
 	 */
 	public static Method findBridgedMethod(Method bridgeMethod) {
+		//通过Method.isBridge()方法可以判断一个方法是否是桥接方法
 		if (!bridgeMethod.isBridge()) {
 			return bridgeMethod;
 		}
+		//从cache中取出bridgeMethod
 		Method bridgedMethod = cache.get(bridgeMethod);
 		if (bridgedMethod == null) {
 			// Gather all methods with matching name and parameter size.
+
 			List<Method> candidateMethods = new ArrayList<>();
 			MethodFilter filter = candidateMethod ->
 					isBridgedCandidateFor(candidateMethod, bridgeMethod);
@@ -230,10 +235,13 @@ public final class BridgeMethodResolver {
 	 * See also https://stas-blogspot.blogspot.com/2010/03/java-bridge-methods-explained.html
 	 * @return whether signatures match as described
 	 */
+
 	public static boolean isVisibilityBridgeMethodPair(Method bridgeMethod, Method bridgedMethod) {
+		//两者相同返回ture
 		if (bridgeMethod == bridgedMethod) {
 			return true;
 		}
+		//两者的返回类型相同，且输入参数相同
 		return (bridgeMethod.getReturnType().equals(bridgedMethod.getReturnType()) &&
 				Arrays.equals(bridgeMethod.getParameterTypes(), bridgedMethod.getParameterTypes()));
 	}

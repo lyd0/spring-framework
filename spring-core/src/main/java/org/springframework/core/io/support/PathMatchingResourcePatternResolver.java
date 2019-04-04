@@ -181,7 +181,8 @@ import org.springframework.util.StringUtils;
  * @see ClassLoader#getResources(String)
  */
 public class PathMatchingResourcePatternResolver implements ResourcePatternResolver {
-
+	//用于处理 ant 匹配风格(com/*.jsp, com/*/.jsp),找出所有的资源, 结合上面的resource的概念一起使用,对于遍历文件很有用. 具体请详细查看javadoc
+	//提供了以classpath开头的通配符方式查询,
 	private static final Log logger = LogFactory.getLog(PathMatchingResourcePatternResolver.class);
 
 	@Nullable

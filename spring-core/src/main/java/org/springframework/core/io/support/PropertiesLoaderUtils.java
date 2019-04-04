@@ -45,7 +45,7 @@ import org.springframework.util.ResourceUtils;
  * @see PropertiesLoaderSupport
  */
 public abstract class PropertiesLoaderUtils {
-
+//加载Properties资源工具类,和Resource结合
 	private static final String XML_FILE_EXTENSION = ".xml";
 
 

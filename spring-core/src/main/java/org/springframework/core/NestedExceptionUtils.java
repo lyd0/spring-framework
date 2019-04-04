@@ -33,7 +33,8 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.web.util.NestedServletException
  */
 public abstract class NestedExceptionUtils {
-
+	// 主要用于框架内
+	// 处理嵌套的异常
 	/**
 	 * Build a message for the given base message and root cause.
 	 * @param message the base message
@@ -42,6 +43,7 @@ public abstract class NestedExceptionUtils {
 	 */
 	@Nullable
 	public static String buildMessage(@Nullable String message, @Nullable Throwable cause) {
+		// 返回传入的message和异常原因信息
 		if (cause == null) {
 			return message;
 		}
@@ -61,6 +63,8 @@ public abstract class NestedExceptionUtils {
 	 */
 	@Nullable
 	public static Throwable getRootCause(@Nullable Throwable original) {
+		// 返回最初的原因
+		// 只要还有.getCause，就循环，直到得到最初的cause
 		if (original == null) {
 			return null;
 		}
@@ -83,6 +87,7 @@ public abstract class NestedExceptionUtils {
 	 * @since 4.3.9
 	 */
 	public static Throwable getMostSpecificCause(Throwable original) {
+		// 返回最初的cause 或者 original就是最初的cause
 		Throwable rootCause = getRootCause(original);
 		return (rootCause != null ? rootCause : original);
 	}

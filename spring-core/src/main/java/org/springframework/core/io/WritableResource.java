@@ -30,7 +30,7 @@ import java.nio.channels.WritableByteChannel;
  * @see java.io.OutputStream
  */
 public interface WritableResource extends Resource {
-
+//可写入资源
 	/**
 	 * Indicate whether the contents of this resource can be written
 	 * via {@link #getOutputStream()}.
@@ -41,6 +41,7 @@ public interface WritableResource extends Resource {
 	 * @see #getOutputStream()
 	 * @see #isReadable()
 	 */
+	//实现本接口 总是可写入
 	default boolean isWritable() {
 		return true;
 	}
@@ -51,6 +52,7 @@ public interface WritableResource extends Resource {
 	 * @throws IOException if the stream could not be opened
 	 * @see #getInputStream()
 	 */
+	//返回输出流
 	OutputStream getOutputStream() throws IOException;
 
 	/**
@@ -64,6 +66,7 @@ public interface WritableResource extends Resource {
 	 * @since 5.0
 	 * @see #getOutputStream()
 	 */
+	//返回可写通道
 	default WritableByteChannel writableChannel() throws IOException {
 		return Channels.newChannel(getOutputStream());
 	}
